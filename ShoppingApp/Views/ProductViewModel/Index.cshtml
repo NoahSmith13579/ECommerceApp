@@ -1,0 +1,61 @@
+﻿@model ShoppingApp.ViewModels.ProductViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    bool isItemInCart = false;
+    bool isCartNull = Model.ShoppingCart == null;
+    bool isCartItemsNull = Model.CartItems == null;
+}
+
+<div class="d-flex m-1">
+
+    
+        <form>
+            <div class="m-2">
+                Find by name: @Html.TextBox("SearchString")  
+                <input type="submit" value="Search" />
+            </div>
+
+            <div class="m-2">
+                Find by Category:
+                <select asp-items="ViewBag.CategorySelectList" name="categoryId">
+                    <option>Please select one</option>
+                </select>
+                <input type="submit"/>
+            </div>
+        </form>
+    
+</div>
+@foreach(var product in Model.Products){
+    <div class="card">
+        <div class="card-header">
+            
+        </div>
+        <div class="card-img">
+            <img src="@Html.DisplayFor(modelItem=> product.ImgUrl)" height="300">
+        </div>
+        <div class="card-body">
+            <span>@Html.DisplayFor(modelItem => product.Name)</span>
+            <span>@Html.DisplayFor(modelItem => product.Description)</span>
+            <div class="btn">
+            <a  asp-area="" asp-controller="ProductViewModel"
+            asp-action="AddItemToCart" asp-route-ProductId="@product.Id">Add to Cart</a>     
+            @if (!isCartNull && !isCartItemsNull)
+             {
+                    isItemInCart = Model.CartItems.Exists(item => item.ProductId == product.Id);
+             }
+             @if (!isCartNull && isItemInCart)
+             {
+
+              <a  asp-area="" asp-controller="ProductViewModel"
+            asp-action="RemoveItemFromCart" asp-route-ProductId="@product.Id">Remove from Cart</a>
+                int amountInCart= Model.CartItems.Find(i => i.ProductId == product.Id).Quantity;
+                <div>
+
+                @amountInCart
+                </div>
+             }
+            </div>
+        </div>
+    </div>
+}

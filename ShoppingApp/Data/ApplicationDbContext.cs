@@ -17,7 +17,7 @@ namespace ShoppingApp.Data
         public DbSet<CartItem> ShoppingCartItems { get; set; }
 
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
-        public DbSet<Address> Address { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -35,11 +35,6 @@ namespace ShoppingApp.Data
 
             foreach (var fk in cascadeFKs)
                 fk.DeleteBehavior = DeleteBehavior.ClientCascade;
-
-            /*modelBuilder.Entity<Order>()
-                .HasOne(o => o.User)
-                .WithMany(u => u.Orders)
-                .OnDelete(DeleteBehavior.ClientCascade);*/
 
 
             var decimalProps = modelBuilder.Model

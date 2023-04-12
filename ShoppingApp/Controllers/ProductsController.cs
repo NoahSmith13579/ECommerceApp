@@ -178,8 +178,10 @@ namespace ShoppingApp.Controllers
             string userId = user.Id;
             var ShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(s => s.UserId == userId);
             bool IsItemInCart = false;
+            bool IsItemTableEmpty = ShoppingCart.CartItems == null;
 
-            if (ShoppingCart != null)
+
+            if (ShoppingCart != null && !IsItemTableEmpty)
             {
                 IsItemInCart = ShoppingCart.CartItems.Exists(i => i.ProductId == ProductId);
             }
@@ -203,7 +205,7 @@ namespace ShoppingApp.Controllers
             }
             else if (IsItemInCart == false)
             {
-                ShoppingCart.CartItems.Add(new CartItem
+                _context.ShoppingCartItems.Add(new CartItem
                 {
                     CartItemId = Guid.NewGuid().ToString(),
                     ShoppingCartId = ShoppingCart.Id,

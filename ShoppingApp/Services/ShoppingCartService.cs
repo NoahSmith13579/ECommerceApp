@@ -11,6 +11,8 @@ namespace ShoppingApp.Services
         void AddItem(string UserId, int ProductId);
         void RemoveItem(string UserId, int ProductId);
         Task<ShoppingCart> GetShoppingCartAsync(string id);
+        int CountItemsInCart(ShoppingCart cart);
+        decimal TotalPriceOfCart(ShoppingCart cart);
         void ClearCart(string UserId);
 
         Task<bool> DoesUserHaveCart(string UserId);
@@ -106,8 +108,8 @@ namespace ShoppingApp.Services
         public async void ClearCart(string UserId)
         {
             var cart = await GetShoppingCartAsync(UserId);
-            cart.CartItems.Clear();
-
+            var cartItems = await _context.ShoppingCartItems.Where(item => item.ShoppingCartId == cart.Id).ToListAsync();
+            _context.ShoppingCartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
         }
 
@@ -122,5 +124,30 @@ namespace ShoppingApp.Services
             return doesUserHaveCart;
         }
 
+        public int CountItemsInCart(ShoppingCart cart)
+        {
+            List<CartItem> ItemsInCart = _context.ShoppingCartItems.Where(item => item.ShoppingCartId == cart.Id).ToList();
+            int count = 0;
+            foreach (var item in ItemsInCart)
+            {
+                count += item.Quantity;
+            }
+
+            return count;
+        }
+
+        public decimal TotalPriceOfCart(ShoppingCart cart)
+        {
+            List<CartItem> ItemsInCart = cart.CartItems.Where(item => item.ShoppingCartId == cart.Id).ToList();
+            decimal total = 0;
+
+            foreach (var item in ItemsInCart)
+            {
+                Product product = _context.Products.Where(p => p.Id == item.ProductId).First();
+                total += product.Price;
+            }
+
+            return total;
+        }
     }
 }

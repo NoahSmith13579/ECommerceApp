@@ -5,6 +5,8 @@ namespace ShoppingApp.ViewModels
     public class ProductViewModel
     {
         public List<Product> Products { get; set; }
+        public List<CartItem> CartItems { get; set; }
+        public List<Category> Categories { get; set; }
         public ShoppingCart ShoppingCart { get; set; }
     }
 }

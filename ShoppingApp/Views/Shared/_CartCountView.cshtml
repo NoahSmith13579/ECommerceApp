@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ShoppingApp.Data
+@using ShoppingApp.Services
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@inject IShoppingCartService ShoppingCartService
+
+
+    @ViewData["CartCount"]
+
+@if (SignInManager.IsSignedIn(User))
+{
+
+    
+        ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
+        ShoppingCart cart = await ShoppingCartService.GetShoppingCartAsync(user.Id);
+        int itemCount = ShoppingCartService.CountItemsInCart(cart);
+
+        <li>
+            @itemCount
+        </li>
+
+}
+
+

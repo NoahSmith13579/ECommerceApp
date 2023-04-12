@@ -172,6 +172,14 @@ namespace ShoppingApp.Controllers
             return (_context.ShoppingCarts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        public async Task<ActionResult> CartCountView()
+        {
+            ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var userId = user.Id;
+            var cart = await _shoppingCartService.GetShoppingCartAsync(userId);
+            ViewData["CartCount"] = _shoppingCartService.CountItemsInCart(cart);
+            return PartialView("_CartCountView");
+        }
 
     }
 }
