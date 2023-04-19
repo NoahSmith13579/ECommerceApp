@@ -12,8 +12,8 @@ using ShoppingApp.Data;
 namespace ShoppingApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230410195009_Init")]
-    partial class Init
+    [Migration("20230419165227_OrderDateStringToDateTime")]
+    partial class OrderDateStringToDateTime
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -271,6 +271,14 @@ namespace ShoppingApp.Migrations
                     b.Property<string>("CartItemId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
@@ -280,6 +288,10 @@ namespace ShoppingApp.Migrations
                     b.Property<string>("ShoppingCartId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("CartItemId");
 
@@ -322,12 +334,8 @@ namespace ShoppingApp.Migrations
                     b.Property<int>("AddressId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ShoppingCartId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("TotalPrice")
                         .HasPrecision(18, 2)
@@ -341,12 +349,49 @@ namespace ShoppingApp.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.HasIndex("ShoppingCartId")
-                        .IsUnique();
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Order", (string)null);
+                });
+
+            modelBuilder.Entity("ShoppingApp.Models.OrderItem", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrderID");
+
+                    b.ToTable("OrderItem", (string)null);
                 });
 
             modelBuilder.Entity("ShoppingApp.Models.Product", b =>
@@ -489,12 +534,6 @@ namespace ShoppingApp.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.HasOne("ShoppingApp.Models.ShoppingCart", "ShoppingCart")
-                        .WithOne("Order")
-                        .HasForeignKey("ShoppingApp.Models.Order", "ShoppingCartId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
                     b.HasOne("ShoppingApp.Data.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
@@ -503,9 +542,16 @@ namespace ShoppingApp.Migrations
 
                     b.Navigation("Address");
 
-                    b.Navigation("ShoppingCart");
-
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ShoppingApp.Models.OrderItem", b =>
+                {
+                    b.HasOne("ShoppingApp.Models.Order", null)
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ShoppingApp.Models.Product", b =>
@@ -541,12 +587,14 @@ namespace ShoppingApp.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ShoppingApp.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
             modelBuilder.Entity("ShoppingApp.Models.ShoppingCart", b =>
                 {
                     b.Navigation("CartItems");
-
-                    b.Navigation("Order")
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

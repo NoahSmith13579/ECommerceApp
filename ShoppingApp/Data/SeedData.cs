@@ -39,7 +39,7 @@ namespace ShoppingApp.Data
                 new Product{Name="Tablet", CategoryId=5, Price=90.00m, Description="Productivity on the go", ImgUrl="/Content/Images/tablet.jpg"},
                 new Product{Name="Digital Camera", CategoryId=5, Price=70.00m, Description="High resolution pictures", ImgUrl="/Content/Images/digital_camera.jpg"},
                 new Product{Name="Potting Soil", CategoryId=6, Price=9.99m, Description="Makes plants grow fast", ImgUrl="/Content/Images/potting_soil.jpg"},
-                new Product{Name="Coffee Maker", CategoryId=6, Price=49.99m, Description="High quality and convenient", ImgUrl="/Content/Images/coffer_maker.jpg"},
+                new Product{Name="Coffee Maker", CategoryId=6, Price=49.99m, Description="High quality and convenient", ImgUrl="/Content/Images/coffee_maker.jpg"},
                 new Product{Name="Cat in the Hat", CategoryId=7, Price=5.29m, Description="By Doctor Seuss", ImgUrl="/Content/Images/The_Cat_in_the_Hat.png"},
                 new Product{Name="The Stranger", CategoryId=7, Price=11.59m, Description="By Albert Camus", ImgUrl="/Content/Images/the_stranger.jpg"},
             };

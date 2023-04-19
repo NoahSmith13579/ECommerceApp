@@ -16,6 +16,8 @@ namespace ShoppingApp.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<CartItem> ShoppingCartItems { get; set; }
 
+        public DbSet<OrderItem> OrderItems { get; set; }
+
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,6 +30,7 @@ namespace ShoppingApp.Data
             modelBuilder.Entity<ShoppingCart>().ToTable(nameof(ShoppingCart));
             modelBuilder.Entity<CartItem>().ToTable(nameof(CartItem));
             modelBuilder.Entity<Address>().ToTable(nameof(Address));
+            modelBuilder.Entity<OrderItem>().ToTable(nameof(OrderItem));
 
             var cascadeFKs = modelBuilder.Model.GetEntityTypes()
        .SelectMany(t => t.GetForeignKeys())

@@ -29,13 +29,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="ProductViewModel" asp-action="Index">Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Cart</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OrderViewModel" asp-action="Checkout">Cart</a>
                         </li>
-                        
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="OrderArchiveViewModel" asp-action="Index">Orders</a>
+                        </li>
                     </ul>
-                    @{
-                       
-                     }
                     <partial name="_CartCountView"/>
                     <partial name="_LoginPartial" />
                 </div>

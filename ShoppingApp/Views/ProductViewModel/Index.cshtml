@@ -19,13 +19,27 @@
             <div class="m-2">
                 Find by Category:
                 <select asp-items="ViewBag.CategorySelectList" name="categoryId">
-                    <option>Please select one</option>
+                    <option disabled>Please select one</option>
                 </select>
                 <input type="submit"/>
             </div>
         </form>
     
 </div>
+
+@if (ViewBag.HasPrevious)
+{
+    <a href="@Url.Action("Index", new {searchString = ViewBag.SearchString, categoryId= ViewBag.CategoryId, page = ViewBag.Page - 1 })">
+        Previous
+    </a>
+}
+@if (ViewBag.HasNext)
+{
+    <a href="@Url.Action("Index", new {searchString = ViewBag.SearchString, categoryId= ViewBag.CategoryId, page = ViewBag.Page + 1 })">
+        Next
+    </a>
+}
+
 @foreach(var product in Model.Products){
     <div class="card">
         <div class="card-header">
@@ -37,6 +51,7 @@
         <div class="card-body">
             <span>@Html.DisplayFor(modelItem => product.Name)</span>
             <span>@Html.DisplayFor(modelItem => product.Description)</span>
+            <span>@Html.DisplayFor(modelItem => product.Price)</span>
             <div class="btn">
             <a  asp-area="" asp-controller="ProductViewModel"
             asp-action="AddItemToCart" asp-route-ProductId="@product.Id">Add to Cart</a>     
@@ -51,7 +66,6 @@
             asp-action="RemoveItemFromCart" asp-route-ProductId="@product.Id">Remove from Cart</a>
                 int amountInCart= Model.CartItems.Find(i => i.ProductId == product.Id).Quantity;
                 <div>
-
                 @amountInCart
                 </div>
              }

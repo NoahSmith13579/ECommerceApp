@@ -1,0 +1,57 @@
+﻿@model ShoppingApp.ViewModels.OrderArchiveViewModel
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+
+@if (ViewBag.HasPrevious)
+{
+    <a href="@Url.Action("Index", new {page = ViewBag.Page - 1 })">
+        Previous
+    </a>
+}
+@if (ViewBag.HasNext)
+{
+    <a href="@Url.Action("Index", new { page = ViewBag.Page + 1 })">
+        Next
+    </a>
+}
+
+@foreach( var order in Model.Orders) {
+    <div class="card m-2">
+        <div class="card-header">
+            <span> Ordered on : @order.OrderDate.ToShortDateString()</span>
+        </div>
+        <div class="card-body">
+            @foreach ( var orderItem in order.OrderItems)
+            {
+                <div class="card m-1">
+                    <div class="card-header"> 
+                        <span>@Html.DisplayFor( modelItem => orderItem.ProductName)</span>
+                    </div>
+                    <div class="card-img"> 
+                        <img src="@Html.DisplayFor(modelItem => orderItem.ImgUrl)" height="200">
+                    </div>
+                   
+                    <div class="card-footer"> 
+                        <div class="d-flex flex-column">
+                        <span>@Html.DisplayFor( modelItem => orderItem.Quantity) purchased</span>
+                        <span>$@Html.DisplayFor( modelItem => orderItem.UnitPrice) per item</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-footer">
+            <div class="d-flex">
+                <span> Total: $@order.TotalPrice </span>
+                <a href="@Url.Action("Details", new{ orderId = order.Id})">Details</a>
+           
+            </div>
+        </div>
+    </div>
+
+
+
+}

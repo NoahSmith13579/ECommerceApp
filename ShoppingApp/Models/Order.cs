@@ -9,26 +9,21 @@ namespace ShoppingApp.Models
         [Required]
         public int Id { get; set; }
 
-        public string ShoppingCartId { get; set; }
-
         [Required]
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
 
         public int AddressId { get; set; }
 
-
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime OrderDate { get; set; }
 
         [Required]
         public decimal TotalPrice { get; set; }
 
+
+        public List<OrderItem> OrderItems { get; set; }
         public ApplicationUser User { get; set; }
-        public ShoppingCart ShoppingCart { get; set; }
         public Address Address { get; set; }
-
-
     }
 }

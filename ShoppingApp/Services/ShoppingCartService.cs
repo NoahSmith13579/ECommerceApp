@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 
@@ -13,7 +14,7 @@ namespace ShoppingApp.Services
         Task<ShoppingCart> GetShoppingCartAsync(string id);
         int CountItemsInCart(ShoppingCart cart);
         decimal TotalPriceOfCart(ShoppingCart cart);
-        void ClearCart(string UserId);
+        void ClearCart(string UserId, List<CartItem> c);
 
         Task<bool> DoesUserHaveCart(string UserId);
 
@@ -21,10 +22,13 @@ namespace ShoppingApp.Services
     public class ShoppingCartService : IShoppingCartService
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<ApplicationUser> _userManager;
 
-        public ShoppingCartService(ApplicationDbContext context)
+
+        public ShoppingCartService(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
         public async Task<ShoppingCart> CreateShoppingCartAsync(string UserId)
         {
@@ -46,10 +50,15 @@ namespace ShoppingApp.Services
         /// </summary>
         /// <param name="Userid"></param>
         /// <returns></returns>
-        public async Task<ShoppingCart> GetShoppingCartAsync(string Userid)
+        public async Task<ShoppingCart> GetShoppingCartAsync(string UserId)
         {
+
             var cart = await _context.ShoppingCarts
-                .FirstOrDefaultAsync(s => s.UserId == Userid);
+                .FirstOrDefaultAsync(s => s.UserId == UserId);
+            if (cart == null)
+            {
+                cart = await CreateShoppingCartAsync(UserId);
+            }
 
             return cart;
         }
@@ -60,6 +69,8 @@ namespace ShoppingApp.Services
             var cart = await GetShoppingCartAsync(UserId);
             var itemInCart = cart.CartItems
                 .FirstOrDefault(i => i.ProductId == ProductId);
+
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == ProductId);
 
             if (itemInCart != null)
             {
@@ -72,6 +83,10 @@ namespace ShoppingApp.Services
                     ShoppingCartId = cart.Id,
                     ProductId = ProductId,
                     Quantity = 1,
+                    ImgUrl = product.ImgUrl,
+                    Name = product.Name,
+                    UnitPrice = product.Price,
+
                 };
                 cart.CartItems.Add(newItem);
 
@@ -105,10 +120,8 @@ namespace ShoppingApp.Services
 
         }
 
-        public async void ClearCart(string UserId)
+        public async void ClearCart(string UserId, List<CartItem> cartItems)
         {
-            var cart = await GetShoppingCartAsync(UserId);
-            var cartItems = await _context.ShoppingCartItems.Where(item => item.ShoppingCartId == cart.Id).ToListAsync();
             _context.ShoppingCartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
         }
@@ -138,16 +151,20 @@ namespace ShoppingApp.Services
 
         public decimal TotalPriceOfCart(ShoppingCart cart)
         {
-            List<CartItem> ItemsInCart = cart.CartItems.Where(item => item.ShoppingCartId == cart.Id).ToList();
-            decimal total = 0;
-
-            foreach (var item in ItemsInCart)
+            bool IsCartEmpty = CountItemsInCart(cart) == 0;
+            if (!IsCartEmpty)
             {
-                Product product = _context.Products.Where(p => p.Id == item.ProductId).First();
-                total += product.Price;
-            }
+                List<CartItem> ItemsInCart = _context.ShoppingCartItems.Where(item => item != null && item.ShoppingCartId == cart.Id).ToList();
+                decimal total = 0;
 
-            return total;
+                foreach (var item in ItemsInCart)
+                {
+                    total += item.UnitPrice * item.Quantity;
+                }
+
+                return total;
+            }
+            else { return 0; }
         }
     }
 }

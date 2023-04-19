@@ -12,13 +12,18 @@
 {
 
     
-        ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
-        ShoppingCart cart = await ShoppingCartService.GetShoppingCartAsync(user.Id);
+     ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
+    if(user != null)
+    {
+        
+      ShoppingCart cart = await ShoppingCartService.GetShoppingCartAsync(user.Id);
         int itemCount = ShoppingCartService.CountItemsInCart(cart);
 
         <li>
             @itemCount
-        </li>
+        </li>  
+    }
+    
 
 }
 

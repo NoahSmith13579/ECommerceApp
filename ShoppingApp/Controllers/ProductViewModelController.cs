@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ShoppingApp.Data;
+using ShoppingApp.Helper;
 using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.ViewModels;
@@ -27,7 +28,7 @@ namespace ShoppingApp.Controllers
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
         }
 
-        public async Task<IActionResult> Index(string searchString, int? categoryId)
+        public async Task<IActionResult> Index(string searchString, int? categoryId, int? page)
         {
 
             bool IsUserLoggedin = User.Identity.IsAuthenticated;
@@ -68,9 +69,24 @@ namespace ShoppingApp.Controllers
             }
 
             var cartItems = await _context.ShoppingCartItems.ToListAsync();
+
+            int pageSize = 5;
+            int pageNumber = page ?? 1;
+
+            var pagedProductList = new PagedList<Product>(productList.ToList(), productList.Count(), pageNumber, pageSize);
+            var displayedProductList = PagedList<Product>.ToPagedList(productList, pageNumber, pageSize);
+
+            ViewBag.SearchString = searchString;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.PageSize = pageSize;
+            ViewBag.Page = pageNumber;
+            ViewBag.TotalPages = pagedProductList.TotalPages;
+            ViewBag.HasNext = pagedProductList.HasNext;
+            ViewBag.HasPrevious = pagedProductList.HasPrevious;
+
             var tables = new ProductViewModel
             {
-                Products = await productList.ToListAsync(),
+                Products = displayedProductList,
                 Categories = await categoryList.ToListAsync(),
                 ShoppingCart = cart,
                 CartItems = cartItems
@@ -105,7 +121,7 @@ namespace ShoppingApp.Controllers
             var ShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(s => s.UserId == userId);
             bool IsItemInCart = false;
             bool IsItemTableEmpty = _context.ShoppingCartItems.IsNullOrEmpty();
-
+            Product product = await _context.Products.Where(p => p != null && p.Id == ProductId).FirstOrDefaultAsync();
 
             if (ShoppingCart != null && !IsItemTableEmpty)
             {
@@ -125,6 +141,9 @@ namespace ShoppingApp.Controllers
                     ShoppingCartId = newCart.Id,
                     ProductId = ProductId,
                     Quantity = 1,
+                    Name = product.Name,
+                    ImgUrl = product.ImgUrl,
+                    UnitPrice = product.Price,
 
                 });
                 await _context.ShoppingCarts.AddAsync(newCart);
@@ -137,6 +156,9 @@ namespace ShoppingApp.Controllers
                     ShoppingCartId = ShoppingCart.Id,
                     ProductId = ProductId,
                     Quantity = 1,
+                    Name = product.Name,
+                    ImgUrl = product.ImgUrl,
+                    UnitPrice = product.Price,
                 });
             }
             else
@@ -155,7 +177,7 @@ namespace ShoppingApp.Controllers
             var ShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(s => s.UserId == userId);
             bool IsItemInCart = false;
             int itemQuantity = 0;
-            var selectedItem = ShoppingCart.CartItems.Where(item => item.ProductId == ProductId).SingleOrDefault();
+            var selectedItem = await _context.ShoppingCartItems.FirstOrDefaultAsync(c => c.ProductId == ProductId);
 
             if (ShoppingCart == null)
             {
@@ -174,7 +196,7 @@ namespace ShoppingApp.Controllers
                 IsItemInCart = ShoppingCart.CartItems.Exists(i => i.ProductId == ProductId);
                 itemQuantity = selectedItem.Quantity;
             }
-            else if (IsItemInCart == true && itemQuantity > 1)
+            if (IsItemInCart == true && itemQuantity > 1)
             {
                 itemQuantity--;
             }

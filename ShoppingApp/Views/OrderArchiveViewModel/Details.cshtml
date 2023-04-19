@@ -1,0 +1,58 @@
+﻿@model ShoppingApp.Models.Order
+
+@{ViewData["Title"] = "Order Details";}
+
+<a asp-action="Index">Back to Orders</a>
+
+<div>
+    <span>Order Date: @Model.OrderDate.ToShortDateString()</span>
+</div>
+
+<div class="card d-flex flex-column m-1">
+    <div class="card-header">
+        Shipping Address:
+    </div>
+    <div class="card-body">
+        <div>
+            <span> @Html.DisplayNameFor(modelItem => modelItem.Address.Street): </span>
+            <span>@Html.DisplayFor(modelItem => modelItem.Address.Street)</span>
+        </div>
+        <div>
+            <span> @Html.DisplayNameFor(modelItem => modelItem.Address.Street2): </span>
+            <span>@Html.DisplayFor(modelItem => modelItem.Address.Street2)</span>
+        </div>
+        <div>
+            <span> @Html.DisplayNameFor(modelItem => modelItem.Address.City): </span>
+            <span>@Html.DisplayFor(modelItem => modelItem.Address.City)</span>
+        </div>
+        <div>
+            <span> @Html.DisplayNameFor(modelItem => modelItem.Address.Country): </span>
+            <span>@Html.DisplayFor(modelItem => modelItem.Address.Country)</span>
+        </div>
+        <div>
+            <span> @Html.DisplayNameFor(modelItem => modelItem.Address.ZipCode): </span>
+            <span>@Html.DisplayFor(modelItem => modelItem.Address.ZipCode)</span>
+        </div>
+    </div>
+</div>
+
+
+
+@foreach(var item in Model.OrderItems)
+{
+    <div class="card m-1">
+        <div class="card-header">
+            @Html.DisplayFor(modelItem => item.ProductName)
+        </div>
+        <div class="card-img">
+          <img src="@Html.DisplayFor(modelItem=> item.ImgUrl)" height="400">
+        </div>
+        <div class="card-body">
+             <span> Purchased @Html.DisplayFor(modelItem => item.Quantity)</span>
+        </div>
+        <div class="card-footer">
+            <span>$@Html.DisplayFor(modelItem => item.UnitPrice)</span>
+
+        </div>
+    </div>
+}
