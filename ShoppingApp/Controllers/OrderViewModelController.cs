@@ -103,7 +103,7 @@ namespace ShoppingApp.Controllers
                 .ToListAsync();
 
             decimal totalPrice = _shoppingCartService.TotalPriceOfCart(cart);
-
+            ViewBag.TotalPrice = totalPrice;
             var tables = new OrderViewModel
             {
                 ShoppingCart = cart,
@@ -133,6 +133,10 @@ namespace ShoppingApp.Controllers
             ShoppingCart cart = await _shoppingCartService.GetShoppingCartAsync(userId);
 
             decimal totalPrice = _shoppingCartService.TotalPriceOfCart(cart);
+            if (totalPrice == 0)
+            {
+                return await Task.Run(() => RedirectToAction("Checkout"));
+            }
             var cartItems = await _context.ShoppingCartItems
                 .Where(i => i.ShoppingCartId == cart.Id)
                 .ToListAsync();
@@ -168,12 +172,17 @@ namespace ShoppingApp.Controllers
             _context.ShoppingCartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
 
-            return await Task.Run(() => View("Success"));
+            var successOrder = await _context.Orders.Where(o => o.Id == newOrder.Id).Include(o => o.OrderItems).FirstOrDefaultAsync();
+
+
+            return await Task.Run(() => View("Success", newOrder));
 
         }
 
         public ActionResult Success()
         {
+
+
 
             return View();
         }

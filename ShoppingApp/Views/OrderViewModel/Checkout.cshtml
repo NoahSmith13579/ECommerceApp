@@ -82,25 +82,34 @@
             asp-action="DecreaseItem" 
             asp-route-cartItemId="@cartItem.CartItemId">
             Remove one
-
         </a>
         <a asp-area="" asp-controller="OrderViewModel"
             asp-action="RemoveItem" 
             asp-route-cartItemId="@cartItem.CartItemId">
             Remove all
-
         </a>
     </div>
-
 }
-</div>
-    <div class="form-group">
-        <label>
-            Total Price: $
-            <span>@Model.TotalPrice</span>
-        </label>
-        <input type="submit" value="Continue" class="btn btn-primary" />
-    </div>
+</div>  
+        @if(@ViewBag.TotalPrice != 0)
+        {
+        <div class="form-group">
+            <label>
+                Total Price: $
+                <span>@ViewBag.TotalPrice</span>
+            </label>
+            <input type="submit" value="Continue" class="btn btn-primary"/>
+        </div>
+        }
+        else
+        {
+        <div class="d-flex flex-column m-1">
+            <span>
+                You have no items in your cart. Start shopping to start ordering!
+            </span>
+            @Html.ActionLink("Go to products page", "Index", "ProductViewModel")
+        </div>
+        }
 </form>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.js"></script>
