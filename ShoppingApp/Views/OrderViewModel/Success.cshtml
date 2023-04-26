@@ -15,7 +15,7 @@
     </div>
 
     <div>
-        <a href="@Url.ActionLink("Index","OrderArchiveModel")">
+        <a href="@Url.ActionLink("Index","OrderArchiveViewModel")">
            View Orders
         </a>
     </div>
@@ -25,21 +25,30 @@
     <span> You ordered:</span>
 </div>
 
-@foreach(var item in  Model.OrderItems)
-{
-    <div class="card m-1">
-        <div class="card-header">
-            @Html.DisplayFor(modelItem => item.ProductName)
-        </div>
-        <div class="card-img">
-          <img src="@Html.DisplayFor(modelItem=> item.ImgUrl)" height="400">
-        </div>
-        <div class="card-body">
-             <span> Purchased @Html.DisplayFor(modelItem => item.Quantity)</span>
-        </div>
-        <div class="card-footer">
-            <span>$@Html.DisplayFor(modelItem => item.UnitPrice)</span>
+<container class="product-container">
+    @foreach(var item in  Model.OrderItems)
+    {
+        <div class="card m-1 ">
+            <div class="card-header">
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </div>
+              <img
+                  class="card-img"
+                  src="@Html.DisplayFor(modelItem=> item.ImgUrl)"
+              >
+        
+            <div class="card-body">
+             
+            </div>
+            <div class="card-footer d-flex">
+                <span>
+                     (@Html.DisplayFor(modelItem => item.Quantity))
+                 </span>
+                <span class="ml-auto">
+                    $@Html.DisplayFor(modelItem => item.UnitPrice)
+                </span>
 
+            </div>
         </div>
-    </div>
-}
+    }
+ </container>

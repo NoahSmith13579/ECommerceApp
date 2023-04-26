@@ -9,7 +9,6 @@ using ShoppingApp.Helper;
 using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.ViewModels;
-
 namespace ShoppingApp.Controllers
 {
     public class ProductViewModelController : Controller
@@ -70,7 +69,7 @@ namespace ShoppingApp.Controllers
 
             var cartItems = await _context.ShoppingCartItems.ToListAsync();
 
-            int pageSize = 5;
+            int pageSize = 6;
             int pageNumber = page ?? 1;
 
             var pagedProductList = new PagedList<Product>(productList.ToList(), productList.Count(), pageNumber, pageSize);

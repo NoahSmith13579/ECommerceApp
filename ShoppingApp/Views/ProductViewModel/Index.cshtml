@@ -8,8 +8,6 @@
 }
 
 <div class="d-flex m-1">
-
-    
         <form>
             <div class="m-2">
                 Find by name: @Html.TextBox("SearchString")  
@@ -24,52 +22,64 @@
                 <input type="submit"/>
             </div>
         </form>
-    
 </div>
 
 @if (ViewBag.HasPrevious)
 {
-    <a href="@Url.Action("Index", new {searchString = ViewBag.SearchString, categoryId= ViewBag.CategoryId, page = ViewBag.Page - 1 })">
+    <a class="m-1" href="@Url.Action("Index", new {searchString = ViewBag.SearchString, categoryId= ViewBag.CategoryId, page = ViewBag.Page - 1 })">
         Previous
     </a>
 }
 @if (ViewBag.HasNext)
 {
-    <a href="@Url.Action("Index", new {searchString = ViewBag.SearchString, categoryId= ViewBag.CategoryId, page = ViewBag.Page + 1 })">
+    <a class="m-1" href="@Url.Action("Index", new {searchString = ViewBag.SearchString, categoryId= ViewBag.CategoryId, page = ViewBag.Page + 1 })">
         Next
     </a>
 }
-
-@foreach(var product in Model.Products){
-    <div class="card">
-        <div class="card-header">
+<container class="product-container">
+    @foreach(var product in Model.Products){
+        <div class="card m-1">
+            <div class="card-header">
+                <span>@Html.DisplayFor(modelItem => product.Name)</span>
+            </div>
+            <img 
+                src="@Html.DisplayFor(modelItem=> product.ImgUrl)" 
+                class="card-img"
+            >
             
-        </div>
-        <div class="card-img">
-            <img src="@Html.DisplayFor(modelItem=> product.ImgUrl)" height="300">
-        </div>
-        <div class="card-body">
-            <span>@Html.DisplayFor(modelItem => product.Name)</span>
-            <span>@Html.DisplayFor(modelItem => product.Description)</span>
-            <span>@Html.DisplayFor(modelItem => product.Price)</span>
-            <div class="btn">
-            <a  asp-area="" asp-controller="ProductViewModel"
-            asp-action="AddItemToCart" asp-route-ProductId="@product.Id">Add to Cart</a>     
-            @if (!isCartNull && !isCartItemsNull)
-             {
-                    isItemInCart = Model.CartItems.Exists(item => item.ProductId == product.Id);
-             }
-             @if (!isCartNull && isItemInCart)
-             {
-
-              <a  asp-area="" asp-controller="ProductViewModel"
-            asp-action="RemoveItemFromCart" asp-route-ProductId="@product.Id">Remove from Cart</a>
-                int amountInCart= Model.CartItems.Find(i => i.ProductId == product.Id).Quantity;
-                <div>
-                @amountInCart
+            <div class="card-body d-flex">
+                <span class="product-desc">@Html.DisplayFor(modelItem => product.Description)</span>
+            </div>
+            <div class="card-footer d-flex">
+                <span> $@Html.DisplayFor(modelItem => product.Price)</span>
+                <div class="ml-auto">
+                    <a  asp-area="" asp-controller="ProductViewModel"
+                    asp-action="AddItemToCart" asp-route-ProductId="@product.Id"
+                    class="p-2 btn btn-primary">
+                        Add to Cart
+                    </a>
+                    @if (!isCartNull && !isCartItemsNull)
+                     {
+                            isItemInCart = Model.CartItems.Exists(item => item.ProductId == product.Id);
+                     }
+                     @if (!isCartNull && isItemInCart)
+                     {
+                        <a  asp-area="" asp-controller="ProductViewModel"
+                        asp-action="RemoveItemFromCart" asp-route-ProductId="@product.Id"
+                        class="p-2 btn btn-outline-danger">
+                            Remove from Cart
+                        </a>
+                            int amountInCart= Model.CartItems.Find(i => i.ProductId == product.Id).Quantity;
+                        <span>
+                            <b>
+                                @amountInCart   
+                            </b>
+                            in cart
+                        </span>   
+                    }
                 </div>
-             }
+                
             </div>
         </div>
-    </div>
-}
+    }
+</container>

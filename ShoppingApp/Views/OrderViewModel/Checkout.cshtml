@@ -5,46 +5,44 @@
 }
 
 <form asp-action="Checkout">
-
-<div class="card">
     @if (Model.Addresses.Any())
     {
         @foreach(var address in Model.Addresses)
         {
         <div class="card">
-            <div>
-                <span> @Html.DisplayNameFor(modelItem => address.Street): </span>
-                <span>@Html.DisplayFor(modelItem => address.Street)</span>
+            <div class="card-header">
+                Address
             </div>
-            <div>
-                <span> @Html.DisplayNameFor(modelItem => address.Street2): </span>
-                <span>@Html.DisplayFor(modelItem => address.Street2)</span>
+            <div class="card-body">
+                <div>
+                    <span> @Html.DisplayNameFor(modelItem => address.Street): </span>
+                    <span>@Html.DisplayFor(modelItem => address.Street)</span>
+                </div>
+                <div>
+                    <span> @Html.DisplayNameFor(modelItem => address.Street2): </span>
+                    <span>@Html.DisplayFor(modelItem => address.Street2)</span>
+                </div>
+                <div>
+                    <span> @Html.DisplayNameFor(modelItem => address.City): </span>
+                    <span>@Html.DisplayFor(modelItem => address.City)</span>
+                </div>
+                <div>
+                    <span> @Html.DisplayNameFor(modelItem => address.Country): </span>
+                    <span>@Html.DisplayFor(modelItem => address.Country)</span>
+                </div>
+                <div>
+                    <span> @Html.DisplayNameFor(modelItem => address.ZipCode): </span>
+                    <span>@Html.DisplayFor(modelItem => address.ZipCode)</span>
+                </div>
+
             </div>
-            <div>
-                <span> @Html.DisplayNameFor(modelItem => address.City): </span>
-                <span>@Html.DisplayFor(modelItem => address.City)</span>
-            </div>
-            <div>
-                <span> @Html.DisplayNameFor(modelItem => address.Country): </span>
-                <span>@Html.DisplayFor(modelItem => address.Country)</span>
-            </div>
-            <div>
-                <span> @Html.DisplayNameFor(modelItem => address.ZipCode): </span>
-                <span>@Html.DisplayFor(modelItem => address.ZipCode)</span>
+            <div class="card-footer">
+                @Html.ActionLink("Edit", "Edit", "Address",new {addressId = address.Id})
+                    <span class="mx-1">Use this address:</span>
+                    <input class="" type="radio" asp-for="AddressId" value="@address.Id" name="AddressId"/>
             </div>
         </div>
-            @Html.ActionLink("Edit", "Edit", "Address",new {addressId = address.Id})
-        <label>
-            Use this address:
-            <div class="">
-                <input type="radio" asp-for="AddressId" value="@address.Id" name="AddressId"/>
-                @*<span asp-validation-for="AddressId" class="text-danger"></span>*@
-
-                
-            </div>
-
-            @*@Html.RadioButtonFor(model => address.Id, address.Id)*@
-        </label>
+        
             
         }
 
@@ -55,44 +53,60 @@
       <span>Add one to place an order.</span>
       @Html.ActionLink("Create", "Create", "Address", new {userId = ViewBag.UserId})
     }
-</div>
 
-<div>
-@foreach(var cartItem in Model.CartItems)
-{
-    <div class="card">
-        <div>
 
-        </div>
-        <div>
-            <span>@Html.DisplayFor(modelItem => cartItem.Product.Name)</span>
-            <span>@Html.DisplayFor(modelItem => cartItem.Quantity)</span>
-            <span>@Html.DisplayFor(modelItem => cartItem.Product.Price)</span>
-            <span> Product pic here</span>
-        </div>
-        <div>
 
-        </div>
-        <a  asp-area="" asp-controller="OrderViewModel"
-            asp-action="IncreaseItem" 
-            asp-route-cartItemId="@cartItem.CartItemId">
-            Add one
-        </a>
-        <a asp-area="" asp-controller="OrderViewModel"
-            asp-action="DecreaseItem" 
-            asp-route-cartItemId="@cartItem.CartItemId">
-            Remove one
-        </a>
-        <a asp-area="" asp-controller="OrderViewModel"
-            asp-action="RemoveItem" 
-            asp-route-cartItemId="@cartItem.CartItemId">
-            Remove all
-        </a>
-    </div>
-}
-</div>  
-        @if(@ViewBag.TotalPrice != 0)
+    <container class="checkout-container">
+        @foreach(var cartItem in Model.CartItems)
         {
+            <div class="card checkout-product-card">
+                <div class="card-header">
+                    <span>@Html.DisplayFor(modelItem => cartItem.Product.Name)</span>
+                </div>
+                <img 
+                src="@Html.DisplayFor(modelItem=> cartItem.ImgUrl)" 
+                class="card-img"
+                >
+                <div class="card-body">
+
+                </div>
+                <div class="card-footer d-flex">
+                    <span>$@Html.DisplayFor(modelItem => cartItem.Product.Price)</span>
+                    <div class="ml-auto">
+                
+                        <a  asp-area="" asp-controller="OrderViewModel"
+                        asp-action="IncreaseItem" 
+                        asp-route-cartItemId="@cartItem.CartItemId"
+                        class="m-1 no-tdl btn btn-primary"
+                        >
+                        +1
+                        </a>
+                        <a asp-area="" asp-controller="OrderViewModel"
+                        asp-action="DecreaseItem" 
+                        asp-route-cartItemId="@cartItem.CartItemId"
+                        class="m-1 no-tdl  btn btn-outline-danger">
+                        -1
+                        </a>
+                        <a asp-area="" asp-controller="OrderViewModel"
+                        asp-action="RemoveItem" 
+                        asp-route-cartItemId="@cartItem.CartItemId"
+                        class="m-1 no-tdl btn btn-danger">
+                        Remove all
+                        </a>
+                        <span>
+                            <b>
+                                <span>@Html.DisplayFor(modelItem => cartItem.Quantity)</span>  
+                            </b>
+                            in cart
+                        </span> 
+                    </div>
+                </div>
+            </div>
+        }
+    </container>
+ 
+    @if(@ViewBag.TotalPrice != 0)
+    {
         <div class="form-group">
             <label>
                 Total Price: $
@@ -109,7 +123,7 @@
             </span>
             @Html.ActionLink("Go to products page", "Index", "ProductViewModel")
         </div>
-        }
+    }
 </form>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.js"></script>

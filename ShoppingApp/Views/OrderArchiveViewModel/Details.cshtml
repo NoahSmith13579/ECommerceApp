@@ -37,22 +37,26 @@
 </div>
 
 
+<container class="product-container">
+    @foreach(var item in Model.OrderItems)
+    {
+        <div class="card m-1">
+            <div class="card-header">
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </div>
+            <img 
+                src="@Html.DisplayFor(modelItem=> item.ImgUrl)" 
+                class="card-img"
+            >
+            <div class="card-body">
+                 
+            </div>
+            <div class="card-footer">
+                <span> (@Html.DisplayFor(modelItem => item.Quantity))</span>
+                <span>$@Html.DisplayFor(modelItem => item.UnitPrice) per item</span>
 
-@foreach(var item in Model.OrderItems)
-{
-    <div class="card m-1">
-        <div class="card-header">
-            @Html.DisplayFor(modelItem => item.ProductName)
+            </div>
         </div>
-        <div class="card-img">
-          <img src="@Html.DisplayFor(modelItem=> item.ImgUrl)" height="400">
-        </div>
-        <div class="card-body">
-             <span> Purchased @Html.DisplayFor(modelItem => item.Quantity)</span>
-        </div>
-        <div class="card-footer">
-            <span>$@Html.DisplayFor(modelItem => item.UnitPrice)</span>
+    }
 
-        </div>
-    </div>
-}
+</container>

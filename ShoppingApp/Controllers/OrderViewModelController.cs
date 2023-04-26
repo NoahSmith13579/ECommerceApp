@@ -84,6 +84,7 @@ namespace ShoppingApp.Controllers
                 bool DoesUserHaveCart = await _shoppingCartService.DoesUserHaveCart(userId);
                 ViewBag.UserId = userId;
 
+
                 addresses = await _context.Addresses
                     .Where(a => a != null && a.UserId == userId)
                     .ToListAsync();
@@ -181,9 +182,6 @@ namespace ShoppingApp.Controllers
 
         public ActionResult Success()
         {
-
-
-
             return View();
         }
 

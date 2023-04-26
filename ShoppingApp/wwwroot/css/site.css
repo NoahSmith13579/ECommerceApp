@@ -20,3 +20,56 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.ml-auto {
+    margin-left:auto;
+}
+
+.product-container, .checkout-container, .archive-product-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 33.33%);
+    grid-template-rows: repeat(auto-fill, 1fr);
+}
+.checkout-container {
+    
+}
+.checkout-product-card{
+   
+}
+
+.archive-container {
+    width: 90%;
+    display: block;
+}
+.archive-item {
+    
+}
+.archive-product-container{
+
+}
+.card{
+    position: relative;
+    
+}
+.product-img {
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: scale-down;
+    max-width: 80%;
+    max-height:80%;
+    display: block;
+}
+
+.prod-body{
+
+}
+.product-desc{
+    align-self:end;
+}
+
+.address-card{
+    display:block
+}
+.no-tdl{
+    text-decoration-line: none
+}
