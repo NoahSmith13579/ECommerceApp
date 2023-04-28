@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 
@@ -9,12 +10,12 @@ namespace ShoppingApp.Services
     public interface IShoppingCartService
     {
         Task<ShoppingCart> CreateShoppingCartAsync(string UserId);
-        void AddItem(string UserId, int ProductId);
-        void RemoveItem(string UserId, int ProductId);
+        Task AddItem(string UserId, int ProductId);
+        Task RemoveItem(string UserId, int ProductId);
         Task<ShoppingCart> GetShoppingCartAsync(string id);
         int CountItemsInCart(ShoppingCart cart);
         decimal TotalPriceOfCart(ShoppingCart cart);
-        void ClearCart(string UserId, List<CartItem> c);
+        Task ClearCart(string UserId, List<CartItem> c);
 
         Task<bool> DoesUserHaveCart(string UserId);
 
@@ -36,7 +37,6 @@ namespace ShoppingApp.Services
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = UserId,
-                CartItems = new List<CartItem>()
             };
             _context.ShoppingCarts.Add(newCart);
 
@@ -52,64 +52,65 @@ namespace ShoppingApp.Services
         /// <returns></returns>
         public async Task<ShoppingCart> GetShoppingCartAsync(string UserId)
         {
-
             var cart = await _context.ShoppingCarts
                 .FirstOrDefaultAsync(s => s.UserId == UserId);
             if (cart == null)
             {
                 cart = await CreateShoppingCartAsync(UserId);
             }
-
             return cart;
         }
 
-        public async void AddItem(string UserId, int ProductId)
+        public async Task AddItem(string UserId, int ProductId)
         {
-
             var cart = await GetShoppingCartAsync(UserId);
-            var itemInCart = cart.CartItems
-                .FirstOrDefault(i => i.ProductId == ProductId);
+            Product product = await _context.Products
+                .Where(p => p != null && p.Id == ProductId)
+                .FirstOrDefaultAsync();
+            var IsItemInCart = false;
+            bool IsItemTableEmpty = _context.ShoppingCartItems.IsNullOrEmpty();
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == ProductId);
-
-            if (itemInCart != null)
+            if (!IsItemTableEmpty)
             {
-                itemInCart.Quantity++;
+                IsItemInCart = _context.ShoppingCartItems
+                    .Any(i => i.ShoppingCartId == cart.Id && i.ProductId == ProductId);
             }
-            else
+
+            if (IsItemInCart)
+            {
+                cart.CartItems.FirstOrDefault(i => i.ProductId == ProductId).Quantity++;
+            }
+            else if (!IsItemInCart)
             {
                 var newItem = new CartItem
                 {
+                    CartItemId = Guid.NewGuid().ToString(),
                     ShoppingCartId = cart.Id,
                     ProductId = ProductId,
                     Quantity = 1,
                     ImgUrl = product.ImgUrl,
                     Name = product.Name,
                     UnitPrice = product.Price,
-
                 };
-                cart.CartItems.Add(newItem);
-
+                _context.ShoppingCartItems.Add(newItem);
             }
             await _context.SaveChangesAsync();
-
-
-
         }
 
-        public async void RemoveItem(string UserId, int ProductId)
+        public async Task RemoveItem(string UserId, int ProductId)
         {
             var cart = await GetShoppingCartAsync(UserId);
 
-            var itemInCart = cart.CartItems
-                .FirstOrDefault(i => i.ProductId == ProductId);
-            if (itemInCart != null)
+            var itemInCart = _context.ShoppingCartItems
+                .FirstOrDefault(i => i.ShoppingCartId == cart.Id && i.ProductId == ProductId);
+
+            if (itemInCart == null)
             {
                 return;
             }
+
             if (itemInCart.Quantity > 1)
             {
-
                 itemInCart.Quantity--;
             }
             else
@@ -117,10 +118,9 @@ namespace ShoppingApp.Services
                 cart.CartItems.Remove(itemInCart);
             };
             await _context.SaveChangesAsync();
-
         }
 
-        public async void ClearCart(string UserId, List<CartItem> cartItems)
+        public async Task ClearCart(string UserId, List<CartItem> cartItems)
         {
             _context.ShoppingCartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();

@@ -10,12 +10,9 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-
-    
      ApplicationUser user = await UserManager.FindByEmailAsync(User.Identity.Name);
     if(user != null)
     {
-        
       ShoppingCart cart = await ShoppingCartService.GetShoppingCartAsync(user.Id);
         int itemCount = ShoppingCartService.CountItemsInCart(cart);
         decimal total = ShoppingCartService.TotalPriceOfCart(cart);
@@ -27,61 +24,56 @@
                 </span> 
             </li>  
             <li class="nav-item">
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="modalButton">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#CartModal" id="modalButton">
                      View Cart
                      <i class="bi bi-cart"></i>
                 </button>
             </li>
          </ul>
-
-         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Cart</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="modalXbutton">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <span>Cart total is: $@total</span>
-          @if(cart.CartItems != null){
-        @foreach(var item in cart.CartItems)
-        {
-            var itemTotal= item.Quantity * item.UnitPrice;
-            <div class="card m-1">
-                <div class="card-header">
-                    @Html.DisplayFor(modelItem => item.Name)
+    <div class="modal fade" id="CartModal" tabindex="-1" role="dialog" aria-labelledby="CartModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="CartModalLabel">Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
                 </div>
-                
-                 <img
-                      class="card-img"
-                      src="@Html.DisplayFor(modelItem=> item.ImgUrl)"
-                 >
-                
-                <div class="card-body">
-                     
-                </div>
-                <div class="card-footer d-flex">
+                <div class="modal-body">
                     <span>
-                         (@Html.DisplayFor(modelItem => item.Quantity))  
-                     </span>
-                     <span class="ml-auto">
-                         $@Html.DisplayFor(modelItem => item.UnitPrice) per item
-                     </span>
-                    <span class="ml-auto"> Total: $@itemTotal </span>
+                        Cart total is: $@total
+                    </span>
+                    @if(cart.CartItems != null)
+                    {
+                        @foreach(var item in cart.CartItems)
+                        {
+                        var itemTotal= item.Quantity * item.UnitPrice;
+                        <div class="card m-1">
+                            <div class="card-header">
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </div>
+                             <img class="card-img" src="@Html.DisplayFor(modelItem=> item.ImgUrl)">
+                            <div class="card-body">
+                            </div>
+                            <div class="card-footer d-flex">
+                                <span>
+                                     (@Html.DisplayFor(modelItem => item.Quantity))  
+                                 </span>
+                                 <span class="ml-auto">
+                                     $@Html.DisplayFor(modelItem => item.UnitPrice) per item
+                                 </span>
+                                <span class="ml-auto"> Total: $@itemTotal </span>
+                            </div>
+                        </div>
+            
+                        }
+                    }
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="modalCloseButton">Close</button>
                 </div>
             </div>
-            
-        }
-        }
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal" id="modalCloseButton">Close</button>
-      </div>
+        </div>
     </div>
-  </div>
-</div>
     }
 
 }
@@ -94,14 +86,13 @@
 <script type="text/javascript">  
         $(document).ready(function () {  
             $("#modalButton").click(function () {  
-                $("#exampleModal").modal('show');  
+                $("#CartModal").modal('show');  
             });
             $("#modalXbutton").click(function () {  
-                $("#exampleModal").modal('hide');  
+                $("#CartModal").modal('hide');  
             });
             $("#modalCloseButton").click(function(){
-                $("#exampleModal").modal('hide');
+                $("#CartModal").modal('hide');
             });
-
         });  
 </script>

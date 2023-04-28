@@ -5,8 +5,8 @@ namespace ShoppingApp.ViewModels
 {
     public class OrderViewModel
     {
-        public ShoppingCart ShoppingCart { get; set; }
-        public List<CartItem> CartItems { get; set; }
+        public ShoppingCart? ShoppingCart { get; set; }
+        public List<CartItem>? CartItems { get; set; }
         public List<Address>? Addresses { get; set; }
 
         [DataType(DataType.Date)]

@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Checkout";
 }
-
 <form asp-action="Checkout">
     @if (Model.Addresses.Any())
     {
@@ -34,34 +33,58 @@
                     <span> @Html.DisplayNameFor(modelItem => address.ZipCode): </span>
                     <span>@Html.DisplayFor(modelItem => address.ZipCode)</span>
                 </div>
-
             </div>
-            <div class="card-footer">
-                @Html.ActionLink("Edit", "Edit", "Address",new {addressId = address.Id})
-                    <span class="mx-1">Use this address:</span>
-                    <input class="" type="radio" asp-for="AddressId" value="@address.Id" name="AddressId"/>
+            <div class="card-footer  align-items-center">
+                <a
+                    asp-action="Edit"
+                    asp-controller="Address"
+                    asp-route-addressId="@address.Id"
+                    class="btn btn-outline-info"
+                >
+                    Edit
+                </a>
+                <span class="mx-1">
+                    Use this address:
+                </span>
+                <input class="" type="radio" asp-for="AddressId" value="@address.Id" name="AddressId"/>
+                
             </div>
         </div>
-        
-            
         }
-
+        <span>
+            Add another address?
+        </span>
+        <a 
+            asp-action="Create" 
+            asp-controller="Address" 
+            asp-route-userId="@ViewBag.UserId"
+            class="btn btn-outline-info"
+        >
+            Create
+        </a>
     }
     else
     {
-      <span>You account does not have an address.</span>
-      <span>Add one to place an order.</span>
-      @Html.ActionLink("Create", "Create", "Address", new {userId = ViewBag.UserId})
+        <div>
+            <span>You account does not have an address.</span>
+            <span>Add one to place an order.</span>
+            <a class="btn btn-primary" asp-action="Create" asp-controller="Address" asp-route-userId="@ViewBag.UserId">Create New Address</a>
+        </div>
+      
     }
 
-
-
+    <br />
+    <div class="m-1">
+        Items in cart:
+    </div>
     <container class="checkout-container">
         @foreach(var cartItem in Model.CartItems)
         {
             <div class="card checkout-product-card">
                 <div class="card-header">
-                    <span>@Html.DisplayFor(modelItem => cartItem.Product.Name)</span>
+                    <span>
+                        @Html.DisplayFor(modelItem => cartItem.Product.Name)
+                    </span>
                 </div>
                 <img 
                 src="@Html.DisplayFor(modelItem=> cartItem.ImgUrl)" 
@@ -70,35 +93,33 @@
                 <div class="card-body">
 
                 </div>
-                <div class="card-footer d-flex">
-                    <span>$@Html.DisplayFor(modelItem => cartItem.Product.Price)</span>
+                <div class="card-footer d-flex align-items-center prod-footer">
+                    <span class="prod-footer-child">
+                        $@Html.DisplayFor(modelItem => cartItem.Product.Price)
+                    </span>
                     <div class="ml-auto">
-                
                         <a  asp-area="" asp-controller="OrderViewModel"
                         asp-action="IncreaseItem" 
                         asp-route-cartItemId="@cartItem.CartItemId"
-                        class="m-1 no-tdl btn btn-primary"
+                        class="m-1 no-tdl btn p-1 btn-outline-primary prod-footer-child"
                         >
                         +1
                         </a>
                         <a asp-area="" asp-controller="OrderViewModel"
                         asp-action="DecreaseItem" 
                         asp-route-cartItemId="@cartItem.CartItemId"
-                        class="m-1 no-tdl  btn btn-outline-danger">
+                        class="m-1 no-tdl btn p-1 btn-outline-danger prod-footer-child">
                         -1
                         </a>
                         <a asp-area="" asp-controller="OrderViewModel"
                         asp-action="RemoveItem" 
                         asp-route-cartItemId="@cartItem.CartItemId"
-                        class="m-1 no-tdl btn btn-danger">
+                        class="m-1 no-tdl btn p-1 btn-danger prod-footer-child">
                         Remove all
                         </a>
-                        <span>
-                            <b>
-                                <span>@Html.DisplayFor(modelItem => cartItem.Quantity)</span>  
-                            </b>
-                            in cart
-                        </span> 
+                        <span class="prod-footer-child">
+                            (@Html.DisplayFor(modelItem => cartItem.Quantity))
+                        </span>
                     </div>
                 </div>
             </div>
@@ -117,11 +138,17 @@
         }
         else
         {
+            <div class="m-2">
+                None
+            </div>
         <div class="d-flex flex-column m-1">
             <span>
                 You have no items in your cart. Start shopping to start ordering!
             </span>
-            @Html.ActionLink("Go to products page", "Index", "ProductViewModel")
+            <div class="my-2">
+                <a asp-action="Index" asp-controller="ProductViewModel" 
+                class="btn btn-primary">Go to Products page</a>
+            </div>
         </div>
     }
 </form>

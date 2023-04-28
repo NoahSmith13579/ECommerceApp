@@ -7,15 +7,29 @@
 
 @if (ViewBag.HasPrevious)
 {
-    <a href="@Url.Action("Index", new {page = ViewBag.Page - 1 })">
+    <a href="@Url.Action("Index", new {page = ViewBag.Page - 1 })"
+    class="m-1 btn btn-primary">
         Previous
     </a>
 }
 @if (ViewBag.HasNext)
 {
-    <a href="@Url.Action("Index", new { page = ViewBag.Page + 1 })">
+    <a href="@Url.Action("Index", new { page = ViewBag.Page + 1 })"
+    class="m-1 btn btn-primary">
         Next
     </a>
+}
+@if(Model.Orders.Count == 0)
+{
+    <div>
+        <span>
+            You have not made any orders. Head over to the cart page to make an order.
+        </span>
+        <div class="my-2">
+            <a asp-action="Checkout" asp-controller="OrderViewModel" 
+            class="btn btn-primary">Go to Cart</a>
+        </div>
+    </div>
 }
 
 <container class="archive-container">
@@ -36,7 +50,6 @@
                         </div>
                         <img class="card-img" src="@Html.DisplayFor(modelItem => orderItem.ImgUrl)">
                         <div class="card-body">
-
                         </div>
                         <div class="card-footer"> 
                             <div class="d-flex">
@@ -50,11 +63,26 @@
             </div>
             <div class="card-footer">
                 <div class="d-flex">
-                    
-                    <a href="@Url.Action("Details", new{ orderId = order.Id})">Details</a>
-           
+                    <a href="@Url.Action("Details", new{ orderId = order.Id})"
+                    class="m-1 btn btn-outline-info">
+                    Details
+                    </a>
                 </div>
             </div>
         </div>
     }
 </container>
+@if (ViewBag.HasPrevious)
+{
+    <a href="@Url.Action("Index", new {page = ViewBag.Page - 1 })"
+    class="m-1 btn btn-primary">
+        Previous
+    </a>
+}
+@if (ViewBag.HasNext)
+{
+    <a href="@Url.Action("Index", new { page = ViewBag.Page + 1 })"
+    class="m-1 btn btn-primary">
+        Next
+    </a>
+}

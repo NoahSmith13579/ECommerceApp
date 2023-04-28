@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using ShoppingApp.Data;
 using ShoppingApp.Helper;
 using ShoppingApp.Models;
@@ -13,7 +12,6 @@ namespace ShoppingApp.Controllers
 {
     public class ProductViewModelController : Controller
     {
-
         private readonly ApplicationDbContext _context;
         private readonly ShoppingCartService _shoppingCartService;
         private UserManager<ApplicationUser> _userManager;
@@ -27,29 +25,13 @@ namespace ShoppingApp.Controllers
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index(string searchString, int? categoryId, int? page)
         {
 
-            bool IsUserLoggedin = User.Identity.IsAuthenticated;
-            ShoppingCart? cart = null;
-
-            if (IsUserLoggedin)
-            {
-                ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
-                string userId = user.Id;
-                bool DoesUserHaveCart = await _shoppingCartService.DoesUserHaveCart(userId);
-
-                if (DoesUserHaveCart == false)
-                {
-                    cart = await _shoppingCartService.CreateShoppingCartAsync(userId);
-                }
-                else
-                {
-                    cart = await _shoppingCartService.GetShoppingCartAsync(userId);
-                }
-
-
-            }
+            ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            string userId = user.Id;
+            ShoppingCart cart = await _shoppingCartService.GetShoppingCartAsync(userId);
             var productList = _context.Products.Select(s => s);
 
             if (!String.IsNullOrEmpty(searchString))
@@ -58,6 +40,7 @@ namespace ShoppingApp.Controllers
             }
 
             var categoryList = _context.Categories.Select(c => c);
+            categoryList = categoryList.OrderBy(c => c.Id == categoryId - 1);
             var categoryDictionary = categoryList
                 .ToDictionary(k => k.Id, v => v.Name);
             ViewData["CategorySelectList"] = new SelectList(categoryDictionary, "Key", "Value");
@@ -89,27 +72,8 @@ namespace ShoppingApp.Controllers
                 Categories = await categoryList.ToListAsync(),
                 ShoppingCart = cart,
                 CartItems = cartItems
-
             };
             return await Task.Run(() => View(tables));
-        }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Products == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
         }
 
         [Authorize]
@@ -117,54 +81,7 @@ namespace ShoppingApp.Controllers
         {
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);
             string userId = user.Id;
-            var ShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(s => s.UserId == userId);
-            bool IsItemInCart = false;
-            bool IsItemTableEmpty = _context.ShoppingCartItems.IsNullOrEmpty();
-            Product product = await _context.Products.Where(p => p != null && p.Id == ProductId).FirstOrDefaultAsync();
-
-            if (ShoppingCart != null && !IsItemTableEmpty)
-            {
-                IsItemInCart = _context.ShoppingCartItems.Any(i => i.ProductId == ProductId);
-            }
-            if (ShoppingCart == null)
-            {
-                ShoppingCart newCart = new ShoppingCart
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = userId,
-                    CartItems = new List<CartItem>()
-                };
-                newCart.CartItems.Add(new CartItem
-                {
-                    CartItemId = Guid.NewGuid().ToString(),
-                    ShoppingCartId = newCart.Id,
-                    ProductId = ProductId,
-                    Quantity = 1,
-                    Name = product.Name,
-                    ImgUrl = product.ImgUrl,
-                    UnitPrice = product.Price,
-
-                });
-                await _context.ShoppingCarts.AddAsync(newCart);
-            }
-            else if (IsItemInCart == false)
-            {
-                _context.ShoppingCartItems.Add(new CartItem
-                {
-                    CartItemId = Guid.NewGuid().ToString(),
-                    ShoppingCartId = ShoppingCart.Id,
-                    ProductId = ProductId,
-                    Quantity = 1,
-                    Name = product.Name,
-                    ImgUrl = product.ImgUrl,
-                    UnitPrice = product.Price,
-                });
-            }
-            else
-            {
-                ShoppingCart.CartItems.FirstOrDefault(i => i.ProductId == ProductId).Quantity++;
-            }
-            await _context.SaveChangesAsync();
+            await _shoppingCartService.AddItem(userId, ProductId);
             return RedirectToAction(nameof(Index));
         }
 
@@ -173,37 +90,7 @@ namespace ShoppingApp.Controllers
         {
             var user = await _userManager.FindByEmailAsync(User.Identity.Name);
             string userId = user.Id;
-            var ShoppingCart = await _context.ShoppingCarts.FirstOrDefaultAsync(s => s.UserId == userId);
-            bool IsItemInCart = false;
-            int itemQuantity = 0;
-            var selectedItem = await _context.ShoppingCartItems.FirstOrDefaultAsync(c => c.ProductId == ProductId);
-
-            if (ShoppingCart == null)
-            {
-                ShoppingCart newCart = new ShoppingCart
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = userId,
-                    CartItems = new List<CartItem>()
-                };
-
-                await _context.ShoppingCarts.AddAsync(newCart);
-            }
-
-            if (ShoppingCart != null)
-            {
-                IsItemInCart = ShoppingCart.CartItems.Exists(i => i.ProductId == ProductId);
-                itemQuantity = selectedItem.Quantity;
-            }
-            if (IsItemInCart == true && itemQuantity > 1)
-            {
-                itemQuantity--;
-            }
-            else
-            {
-                ShoppingCart.CartItems.Remove(selectedItem);
-            }
-            await _context.SaveChangesAsync();
+            await _shoppingCartService.RemoveItem(userId, ProductId);
             return RedirectToAction(nameof(Index));
         }
     }

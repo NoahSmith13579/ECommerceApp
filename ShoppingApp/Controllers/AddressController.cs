@@ -22,24 +22,12 @@ namespace ShoppingApp.Controllers
             _userManager = userManager;
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
         }
-
-
-
-
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-
         [HttpGet]
         public async Task<IActionResult> Create(string userId)
         {
             ViewBag.UserId = userId;
             return await Task.Run(() => View());
         }
-
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([Bind("Bind, City, Street, Street2, Country, ZipCode, UserId")] Address address)
@@ -58,7 +46,6 @@ namespace ShoppingApp.Controllers
             }
             return RedirectToAction("Checkout", "OrderViewModel");
         }
-
         [Authorize]
         public async Task<IActionResult> Edit(int addressId)
         {
@@ -69,12 +56,10 @@ namespace ShoppingApp.Controllers
 
             return View(address);
         }
-
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Edit([Bind("Id, Bind, City, Street, Street2, Country, ZipCode, UserId")] Address address)
         {
-            //Address updatedAddress = _context.Addresses.Where(a => a.Id == address.Id).SingleOrDefault();
             if (ModelState.IsValid)
             {
                 _context.Entry(address).State = EntityState.Modified;
@@ -84,7 +69,6 @@ namespace ShoppingApp.Controllers
             {
                 return View();
             }
-
             return RedirectToAction("Checkout", "OrderViewModel");
         }
     }

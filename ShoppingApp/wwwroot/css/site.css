@@ -63,6 +63,12 @@ body {
 .prod-body{
 
 }
+.prod-footer{
+    padding: 0.5rem 0.5rem
+}
+.prod-footer-child{
+    
+}
 .product-desc{
     align-self:end;
 }
@@ -72,4 +78,12 @@ body {
 }
 .no-tdl{
     text-decoration-line: none
+}
+
+@media (max-width: 1190px) {
+    .prod-footer{
+    }
+    .prod-footer-child{
+        font-size: 0.5rem;
+    }
 }

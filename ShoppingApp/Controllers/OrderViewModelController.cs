@@ -25,47 +25,6 @@ namespace ShoppingApp.Controllers
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
 
         }
-
-
-
-
-
-
-        /*// GET: OrderViewModelController
-        [Authorize]
-        public async Task<ActionResult> Index()
-        {
-            bool IsUserLoggedin = User.Identity.IsAuthenticated;
-            ShoppingCart? cart = null;
-
-            if (IsUserLoggedin)
-            {
-                ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
-                string userId = user.Id;
-                bool DoesUserHaveCart = await _shoppingCartService.DoesUserHaveCart(userId);
-
-                if (DoesUserHaveCart == false)
-                {
-                    cart = await _shoppingCartService.CreateShoppingCartAsync(userId);
-                }
-                else
-                {
-                    cart = await _shoppingCartService.GetShoppingCartAsync(userId);
-                }
-            }
-
-            var itemsInCart = await _context.ShoppingCartItems
-                .Where(i => i.ShoppingCartId == cart.Id).ToListAsync();
-
-            var tables = new OrderViewModel
-            {
-                ShoppingCart = cart,
-                CartItems = itemsInCart,
-            };
-            return View(tables);
-        }*/
-
-
         // GET: OrderViewModelController/Checkout
         [Authorize]
         [HttpGet]
@@ -81,21 +40,11 @@ namespace ShoppingApp.Controllers
             {
                 ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
                 string userId = user.Id;
-                bool DoesUserHaveCart = await _shoppingCartService.DoesUserHaveCart(userId);
                 ViewBag.UserId = userId;
-
-
                 addresses = await _context.Addresses
                     .Where(a => a != null && a.UserId == userId)
                     .ToListAsync();
-                if (DoesUserHaveCart == false)
-                {
-                    cart = await _shoppingCartService.CreateShoppingCartAsync(userId);
-                }
-                else
-                {
-                    cart = await _shoppingCartService.GetShoppingCartAsync(userId);
-                }
+                cart = await _shoppingCartService.GetShoppingCartAsync(userId);
             }
 
             var cartItemsInCart = await _context.ShoppingCartItems
@@ -115,13 +64,16 @@ namespace ShoppingApp.Controllers
             };
             return await Task.Run(() => View(tables));
         }
-
-        // POST: OrderViewModelController/Create
+        // POST: OrderViewModelController/Checkout
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Checkout(OrderViewModel ovm)
         {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Checkout");
+            }
             if (ovm.AddressId == 0)
             {
                 return await Task.Run(() => RedirectToAction("Checkout"));
@@ -165,7 +117,6 @@ namespace ShoppingApp.Controllers
                     Quantity = item.Quantity,
                     ImgUrl = item.ImgUrl,
                     UnitPrice = item.UnitPrice,
-
                 };
                 newOrderItems.Add(orderItem);
             }
@@ -174,10 +125,7 @@ namespace ShoppingApp.Controllers
             await _context.SaveChangesAsync();
 
             var successOrder = await _context.Orders.Where(o => o.Id == newOrder.Id).Include(o => o.OrderItems).FirstOrDefaultAsync();
-
-
             return await Task.Run(() => View("Success", newOrder));
-
         }
 
         public ActionResult Success()
@@ -189,7 +137,6 @@ namespace ShoppingApp.Controllers
         {
             CartItem cartItem = await _context.ShoppingCartItems.FindAsync(cartItemId);
             cartItem.Quantity++;
-
             await _context.SaveChangesAsync();
             return await Task.Run(() => RedirectToAction(nameof(Checkout)));
         }
@@ -198,25 +145,19 @@ namespace ShoppingApp.Controllers
         {
             CartItem cartItem = await _context.ShoppingCartItems.FindAsync(cartItemId);
             cartItem.Quantity--;
-
             if (cartItem.Quantity <= 0)
             {
                 _context.ShoppingCartItems.Remove(cartItem);
             }
-
             await _context.SaveChangesAsync();
-
             return await Task.Run(() => RedirectToAction(nameof(Checkout)));
         }
 
         public async Task<ActionResult> RemoveItem(string cartItemId)
         {
             CartItem cartItem = await _context.ShoppingCartItems.FindAsync(cartItemId);
-
             _context.ShoppingCartItems.Remove(cartItem);
             await _context.SaveChangesAsync();
-
-
             return await Task.Run(() => RedirectToAction(nameof(Checkout)));
         }
     }
