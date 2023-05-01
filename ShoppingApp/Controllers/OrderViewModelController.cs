@@ -25,7 +25,10 @@ namespace ShoppingApp.Controllers
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
 
         }
-        // GET: OrderViewModelController/Checkout
+        /// <summary>
+        /// Get Checkout OrderViewModel view
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         [HttpGet]
         public async Task<ActionResult> Checkout()
@@ -64,7 +67,11 @@ namespace ShoppingApp.Controllers
             };
             return await Task.Run(() => View(tables));
         }
-        // POST: OrderViewModelController/Checkout
+        /// <summary>
+        /// Post method for creating orders
+        /// </summary>
+        /// <param name="ovm"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -128,11 +135,21 @@ namespace ShoppingApp.Controllers
             return await Task.Run(() => View("Success", newOrder));
         }
 
+        /// <summary>
+        /// Get Success OrderViewModel view
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         public ActionResult Success()
         {
             return View();
         }
 
+        /// <summary>
+        /// Increases cartItem's quantity by 1
+        /// </summary>
+        /// <param name="cartItemId"></param>
+        /// <returns>Checkout view</returns>
         public async Task<ActionResult> IncreaseItem(string cartItemId)
         {
             CartItem cartItem = await _context.ShoppingCartItems.FindAsync(cartItemId);
@@ -141,6 +158,11 @@ namespace ShoppingApp.Controllers
             return await Task.Run(() => RedirectToAction(nameof(Checkout)));
         }
 
+        /// <summary>
+        /// Decreases cartItem's quantity by 1 or remove if new quantity is 0
+        /// </summary>
+        /// <param name="cartItemId"></param>
+        /// <returns>Checkout view</returns>
         public async Task<ActionResult> DecreaseItem(string cartItemId)
         {
             CartItem cartItem = await _context.ShoppingCartItems.FindAsync(cartItemId);
@@ -153,6 +175,11 @@ namespace ShoppingApp.Controllers
             return await Task.Run(() => RedirectToAction(nameof(Checkout)));
         }
 
+        /// <summary>
+        /// Removes cartItem
+        /// </summary>
+        /// <param name="cartItemId"></param>
+        /// <returns>Checkout view</returns>
         public async Task<ActionResult> RemoveItem(string cartItemId)
         {
             CartItem cartItem = await _context.ShoppingCartItems.FindAsync(cartItemId);

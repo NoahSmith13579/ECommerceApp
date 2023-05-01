@@ -31,6 +31,11 @@ namespace ShoppingApp.Services
             _context = context;
             _userManager = userManager;
         }
+        /// <summary>
+        /// Creates a cart for a user
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns>ShoppingCart</returns>
         public async Task<ShoppingCart> CreateShoppingCartAsync(string UserId)
         {
             var newCart = new ShoppingCart
@@ -46,10 +51,10 @@ namespace ShoppingApp.Services
         }
 
         /// <summary>
-        /// Returns the <c>cart</c>  that matches the <c> User's Id </c>
+        /// Returns the cart that matches the user's Id 
         /// </summary>
         /// <param name="Userid"></param>
-        /// <returns></returns>
+        /// <returns>ShoppingCart</returns>
         public async Task<ShoppingCart> GetShoppingCartAsync(string UserId)
         {
             var cart = await _context.ShoppingCarts
@@ -61,6 +66,12 @@ namespace ShoppingApp.Services
             return cart;
         }
 
+        /// <summary>
+        /// Adds item to user's cart or increases quantity
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="ProductId"></param>
+        /// <returns>Task</returns>
         public async Task AddItem(string UserId, int ProductId)
         {
             var cart = await GetShoppingCartAsync(UserId);
@@ -97,6 +108,12 @@ namespace ShoppingApp.Services
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Decreases item's quantity by one or remove if new quantity is 0
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="ProductId"></param>
+        /// <returns>Task</returns>
         public async Task RemoveItem(string UserId, int ProductId)
         {
             var cart = await GetShoppingCartAsync(UserId);
@@ -120,12 +137,23 @@ namespace ShoppingApp.Services
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Removes all items from the user's cart
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <param name="cartItems"></param>
+        /// <returns>Task</returns>
         public async Task ClearCart(string UserId, List<CartItem> cartItems)
         {
             _context.ShoppingCartItems.RemoveRange(cartItems);
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Check if user has a cart
+        /// </summary>
+        /// <param name="UserId"></param>
+        /// <returns></returns>
         public async Task<bool> DoesUserHaveCart(string UserId)
         {
             bool doesUserHaveCart = false;
@@ -137,6 +165,11 @@ namespace ShoppingApp.Services
             return doesUserHaveCart;
         }
 
+        /// <summary>
+        /// Returns amount of items in user's cart
+        /// </summary>
+        /// <param name="cart"></param>
+        /// <returns></returns>
         public int CountItemsInCart(ShoppingCart cart)
         {
             List<CartItem> ItemsInCart = _context.ShoppingCartItems.Where(item => item.ShoppingCartId == cart.Id).ToList();
@@ -148,7 +181,11 @@ namespace ShoppingApp.Services
 
             return count;
         }
-
+        /// <summary>
+        /// Returns sum of all item's UnitPrice * Quantity
+        /// </summary>
+        /// <param name="cart"></param>
+        /// <returns></returns>
         public decimal TotalPriceOfCart(ShoppingCart cart)
         {
             bool IsCartEmpty = CountItemsInCart(cart) == 0;

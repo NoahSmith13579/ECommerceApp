@@ -22,12 +22,23 @@ namespace ShoppingApp.Controllers
             _userManager = userManager;
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
         }
+        /// <summary>
+        /// Gets Address Create view
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Create(string userId)
         {
             ViewBag.UserId = userId;
             return await Task.Run(() => View());
         }
+
+        /// <summary>
+        /// Post method for creating addresses
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([Bind("Bind, City, Street, Street2, Country, ZipCode, UserId")] Address address)
@@ -46,6 +57,12 @@ namespace ShoppingApp.Controllers
             }
             return RedirectToAction("Checkout", "OrderViewModel");
         }
+
+        /// <summary>
+        /// Gets Address Edit view
+        /// </summary>
+        /// <param name="addressId"></param>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> Edit(int addressId)
         {
@@ -56,6 +73,11 @@ namespace ShoppingApp.Controllers
 
             return View(address);
         }
+        /// <summary>
+        /// Post method for editting address
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Edit([Bind("Id, Bind, City, Street, Street2, Country, ZipCode, UserId")] Address address)

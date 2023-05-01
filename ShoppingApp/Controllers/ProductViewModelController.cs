@@ -25,7 +25,15 @@ namespace ShoppingApp.Controllers
             _shoppingCartService = (ShoppingCartService)shoppingCartService;
         }
 
+        /// <summary>
+        /// Get Index ProductViewModel view
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="categoryId"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [Authorize]
+        [HttpGet]
         public async Task<IActionResult> Index(string searchString, int? categoryId, int? page)
         {
 
@@ -76,6 +84,11 @@ namespace ShoppingApp.Controllers
             return await Task.Run(() => View(tables));
         }
 
+        /// <summary>
+        /// Adds item to the user's cart
+        /// </summary>
+        /// <param name="ProductId"></param>
+        /// <returns>Index view</returns>
         [Authorize]
         public async Task<IActionResult> AddItemToCart(int ProductId)
         {
@@ -85,6 +98,11 @@ namespace ShoppingApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Removes item from the user's cart
+        /// </summary>
+        /// <param name="ProductId"></param>
+        /// <returns>Index view</returns>
         [Authorize]
         public async Task<IActionResult> RemoveItemFromCart(int ProductId)
         {

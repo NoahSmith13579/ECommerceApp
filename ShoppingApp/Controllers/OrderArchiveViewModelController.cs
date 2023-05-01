@@ -27,7 +27,11 @@ namespace ShoppingApp.Controllers
 
 
 
-        // GET: OrderArchiveController
+        /// <summary>
+        /// Gets OrderArchiveViewModel Index view
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet]
         public async Task<ActionResult> Index(int? page)
@@ -43,11 +47,6 @@ namespace ShoppingApp.Controllers
             var pagedOrderList = new PagedList<Order>(OrderList.ToList(), OrderList.Count(), pageNumber, pageSize);
             var displayedOrderList = PagedList<Order>.ToPagedList(OrderList, pageNumber, pageSize);
 
-            /*var OrderItemList = new List<List<OrderItem>> { };
-            foreach (var order in OrderList) 
-            { 
-                order.OrderItems
-            }*/
 
 
             ViewBag.PageSize = pageSize;
@@ -59,14 +58,17 @@ namespace ShoppingApp.Controllers
             var lists = new OrderArchiveViewModel
             {
                 Orders = displayedOrderList,
-                // OrderItems =
             };
 
             return await Task.Run(() => View(lists));
 
         }
 
-        // GET: OrderArchiveController/Details/5
+        /// <summary>
+        /// Gets Details OrderArchiveViewModel view
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
         [Authorize]
         [HttpGet]
         public async Task<ActionResult> Details(int orderId)

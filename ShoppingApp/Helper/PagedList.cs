@@ -19,6 +19,13 @@
             AddRange(items);
         }
 
+        /// <summary>
+        /// Converts queryable to a PagedList
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <returns>PagedList</returns>
         public static PagedList<T> ToPagedList(IQueryable<T> source, int pageNumber, int pageSize)
         {
             var count = source.Count();
