@@ -8,14 +8,11 @@ namespace ShoppingApp.ViewModels
         public ShoppingCart? ShoppingCart { get; set; }
         public List<CartItem>? CartItems { get; set; }
         public List<Address>? Addresses { get; set; }
-
         [DataType(DataType.Date)]
         public DateTime? Date { get; set; }
+        [Required]
         public int AddressId { get; set; }
-
         [Required]
         public decimal TotalPrice { get; set; }
-
-
     }
 }

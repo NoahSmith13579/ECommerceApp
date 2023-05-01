@@ -38,8 +38,8 @@
 <container class="product-container">
     @foreach(var product in Model.Products){
         <div class="card m-1">
-            <div class="card-header">
-                <span>@Html.DisplayFor(modelItem => product.Name)</span>
+            <div class="card-header bg-primary text-white">
+                <span >@Html.DisplayFor(modelItem => product.Name)</span>
             </div>
             <img
                 src="@Html.DisplayFor(modelItem=> product.ImgUrl)" 
@@ -58,7 +58,7 @@
                     </a>
                     @if (!isCartNull && !isCartItemsNull)
                      {
-                            isItemInCart = Model.CartItems.Exists(item => item.ProductId == product.Id);
+                            isItemInCart = Model.CartItems.Exists(item => item.ProductId == product.Id && item.ShoppingCartId == Model.ShoppingCart.Id);
                      }
                     @if (!isCartNull && isItemInCart)
                      {

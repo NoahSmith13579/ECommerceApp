@@ -9,7 +9,7 @@
         @foreach(var address in Model.Addresses)
         {
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-primary text-white">
                 Address
             </div>
             <div class="card-body">
@@ -72,7 +72,7 @@
         </div>
       
     }
-
+    <span asp-validation-for="AddressId" class="text-danger"></span>
     <br />
     <div class="m-1">
         Items in cart:
@@ -81,7 +81,7 @@
         @foreach(var cartItem in Model.CartItems)
         {
             <div class="card checkout-product-card">
-                <div class="card-header">
+                <div class="card-header bg-primary text-white">
                     <span>
                         @Html.DisplayFor(modelItem => cartItem.Product.Name)
                     </span>

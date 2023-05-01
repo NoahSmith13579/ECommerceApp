@@ -36,7 +36,7 @@
     @foreach( var order in Model.Orders) 
     {
         <div class="card m-2">
-            <div class="card-header d-flex">
+            <div class="card-header d-flex bg-primary text-white">
                 <span> Ordered on : @order.OrderDate.ToShortDateString()</span>
                 <span class="ml-auto"> Total: $@order.TotalPrice </span>
             </div>
@@ -45,7 +45,7 @@
                 @foreach ( var orderItem in order.OrderItems)
                 {
                     <div class="card archive-item m-1">
-                        <div class="card-header"> 
+                        <div class="card-header bg-primary text-white"> 
                             <span>@Html.DisplayFor( modelItem => orderItem.ProductName)</span>
                         </div>
                         <img class="card-img" src="@Html.DisplayFor(modelItem => orderItem.ImgUrl)">

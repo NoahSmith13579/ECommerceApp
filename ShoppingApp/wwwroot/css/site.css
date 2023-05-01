@@ -51,6 +51,12 @@ body {
     position: relative;
     
 }
+.card-header {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-primary-rgb),var(--bs-bg-opacity)) !important;
+    --bs-text-opacity: 1;
+    color: rgba(var(--bs-white-rgb),var(--bs-text-opacity)) !important
+}
 .product-img {
     margin-left: auto;
     margin-right: auto;
