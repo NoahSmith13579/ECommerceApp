@@ -14,10 +14,10 @@ namespace ShoppingApp.Models
         [RegularExpression(@"^[a-zA-Z0-9 ]+$", ErrorMessage = "Street2 may contain only alphanumeric characters")]
         public string? Street2 { get; set; }
         [Required]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "City may only contain alphabetical characters")]
+        [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "City may only contain alphabetical characters")]
         public string City { get; set; }
         [Required]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Country may only contain alphabetical characters")]
+        [RegularExpression(@"^[a-zA-Z ]+$", ErrorMessage = "Country may only contain alphabetical characters")]
         public string Country { get; set; }
         [Required]
 
