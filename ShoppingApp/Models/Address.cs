@@ -1,8 +1,4 @@
-﻿using ShoppingApp.Data;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace ShoppingApp.Models
+﻿namespace ShoppingApp.Models
 {
     public class Address
     {
@@ -17,7 +13,7 @@ namespace ShoppingApp.Models
         [RegularExpression(@"^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$", ErrorMessage = "City may not contain special characters")]
         public string City { get; set; }
         [Required]
-        [RegularExpression(@"^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$", ErrorMessage = "Country may only contain alphabetical characters")]
+        [RegularExpression(@"^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$", ErrorMessage = "Country may not contain special characters")]
         public string Country { get; set; }
         [Required]
 
