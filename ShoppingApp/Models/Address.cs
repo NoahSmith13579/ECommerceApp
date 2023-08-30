@@ -1,4 +1,8 @@
-﻿namespace ShoppingApp.Models
+﻿using ShoppingApp.Data;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ShoppingApp.Models
 {
     public class Address
     {
