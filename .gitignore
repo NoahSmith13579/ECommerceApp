@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ShoppingApp/Properties/ServiceDependencies/ECommerceShoppingApp - Web Deploy1/profile.arm.json
+/ShoppingApp/Properties/serviceDependencies.ECommerceShoppingApp - Web Deploy1.json
