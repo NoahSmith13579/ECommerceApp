@@ -1,91 +1,57 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using ShoppingApp.Data;
 
 namespace ShoppingApp.Services
 // From https://learn.microsoft.com/en-us/answers/questions/1792711/sql-server-connection-timeout-after-idle
 {
-    public class KeepAliveService : IHostedService, IDisposable
-
+    public class KeepAliveService : BackgroundService
     {
-
-        private Timer _timer;
-
-        private readonly string _connectionString;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
         private readonly ILogger<KeepAliveService> _logger;
+        private readonly TimeSpan _interval = TimeSpan.FromMinutes(10);
 
-        public KeepAliveService(IConfiguration configuration, ILogger<KeepAliveService> logger)
-
+        public KeepAliveService(
+            IDbContextFactory<ApplicationDbContext> contextFactory,
+            ILogger<KeepAliveService> logger)
         {
-
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _contextFactory = contextFactory;
             _logger = logger;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("EF Core keep-alive service started.");
-            // Set up a timer to trigger the keep-alive query every 15 minutes
+            _logger.LogInformation("EF Core keep-alive service started. Interval: {Interval} minutes",
+                _interval.TotalMinutes);
 
-            _timer = new Timer(KeepAlive, null, TimeSpan.Zero, TimeSpan.FromMinutes(15));
-
-            return Task.CompletedTask;
-
-        }
-
-        private void KeepAlive(object state)
-
-        {
-
-            using (var connection = new SqlConnection(_connectionString))
-
+            while (!stoppingToken.IsCancellationRequested)
             {
+                try
+                {
+                    using var context = _contextFactory.CreateDbContext();
+
+                    // Executes a lightweight query (works with retries if configured)
+                    await context.Database.ExecuteSqlRawAsync("SELECT 1", cancellationToken: stoppingToken);
+
+                    _logger.LogInformation("EF Core keep-alive sent at {Time}", DateTimeOffset.Now);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "EF Core keep-alive failed at {Time}", DateTimeOffset.Now);
+                }
 
                 try
-
                 {
-
-                    connection.Open();
-
-                    using (var command = new SqlCommand("SELECT 1", connection))
-
-                    {
-                        _logger.LogInformation("EF Core keep-alive sent at {time}", DateTimeOffset.Now);
-                        command.ExecuteScalar();
-
-                    }
+                    await Task.Delay(_interval, stoppingToken);
                 }
-
-                catch (Exception ex)
-
+                catch (TaskCanceledException)
                 {
-                    // Handle exceptions as needed
-                    _logger.LogError(ex, "EF Core keep-alive failed");
-
+                    // normal when the service is shutting down
+                    break;
                 }
-
             }
 
+            _logger.LogInformation("EF Core keep-alive service stopped.");
         }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-
-        {
-
-            _timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
-
-        }
-
-        public void Dispose()
-
-        {
-
-            _timer?.Dispose();
-
-        }
-
     }
 
 }
