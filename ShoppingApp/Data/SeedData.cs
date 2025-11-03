@@ -6,13 +6,16 @@ namespace ShoppingApp.Data
     {
         public static void Initialize(ApplicationDbContext context)
         {
-            if (context.Products.Any())
+            Console.WriteLine("Starting SeedData Initialization");
+            try
             {
-                return;
-            }
+                if (context.Products.Any())
+                {
+                    return;
+                }
 
-            var categories = new Category[]
-            {
+                var categories = new Category[]
+                {
                 new Category{Name="Beauty & Health", Description="For taking care of yourself"},
                 new Category{Name="Auto", Description="Vehicle maintenance and supplies"},
                 new Category{Name="Apparel", Description="Clothes for every style"},
@@ -20,14 +23,14 @@ namespace ShoppingApp.Data
                 new Category{Name="Electronics", Description="The latest gadgets"},
                 new Category{Name="Home & Garden", Description="Tools for any DIY project"},
                 new Category{Name="Books", Description="Literature from around the world"},
-            };
+                };
 
-            context.Categories.AddRange(categories);
-            context.SaveChanges();
+                context.Categories.AddRange(categories);
+                context.SaveChanges();
 
 
-            var products = new Product[]
-            {
+                var products = new Product[]
+                {
                 new Product{Name="Shampoo", CategoryId=1, Price=9.99m, Description="Cleans hair", ImgUrl="/Content/Images/pexels-karolina-grabowska-4465121.jpg"},
                 new Product{Name="Vitamin-D", CategoryId=1, Price=5.99m, Description="Important for skin and bone health", ImgUrl="/Content/Images/vitamin_bottle.jpg"},
                 new Product{Name="Air Freshener", CategoryId=2, Price=4.99m, Description="Keeps car smelling fresh", ImgUrl="/Content/Images/air_freshener.jpg"},
@@ -42,10 +45,16 @@ namespace ShoppingApp.Data
                 new Product{Name="Coffee Maker", CategoryId=6, Price=49.99m, Description="High quality and convenient", ImgUrl="/Content/Images/coffee_maker.jpg"},
                 new Product{Name="Cat in the Hat", CategoryId=7, Price=5.29m, Description="By Doctor Seuss", ImgUrl="/Content/Images/The_Cat_in_the_Hat.png"},
                 new Product{Name="The Stranger", CategoryId=7, Price=11.59m, Description="By Albert Camus", ImgUrl="/Content/Images/the_stranger.jpg"},
-            };
+                };
 
-            context.Products.AddRange(products);
-            context.SaveChanges();
+                context.Products.AddRange(products);
+                context.SaveChanges();
+                Console.WriteLine("Seeded Data");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("SeedData Error: " + ex.Message);
+            }
 
         }
     }
